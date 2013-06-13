@@ -78,6 +78,7 @@ module NanocDeploy::Extra::Deployers
       provider = @site.config[:deploy][config_name][:provider]
       src = File.expand_path(@site.config[:output_dir]) + '/'
       bucket = @site.config[:deploy][config_name][:bucket] || ENV['S3_BUCKET']
+      region = @site.config[:deploy][config_name][:region] || ENV['S3_REGION']
 
       path = @site.config[:deploy][config_name][:path]
 
@@ -91,7 +92,8 @@ module NanocDeploy::Extra::Deployers
           connection = Fog::Storage.new(
             :provider => 'AWS',
             :aws_access_key_id => @site.config[:deploy][config_name][:aws_access_key_id] || ENV['AWS_ACCESS_KEY_ID'],
-            :aws_secret_access_key => @site.config[:deploy][config_name][:aws_secret_access_key] || ENV['AWS_SECRET_ACCESS_KEY']
+            :aws_secret_access_key => @site.config[:deploy][config_name][:aws_secret_access_key] || ENV['AWS_SECRET_ACCESS_KEY'],
+            :region => region
             )
         when 'rackspace'
           connection = Fog::Storage.new(
