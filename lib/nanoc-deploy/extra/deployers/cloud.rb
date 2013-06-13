@@ -56,7 +56,7 @@ module NanocDeploy::Extra::Deployers
     #       rackspace_api_key: 123456789
     def initialize
       # Get site
-      error 'No site configuration found' unless File.file?('config.yaml')
+      error 'No site configuration found' unless File.file?('nanoc.yaml')
       @site = Nanoc3::Site.new('.')
     end
 
@@ -77,7 +77,7 @@ module NanocDeploy::Extra::Deployers
       # Set arguments
       provider = @site.config[:deploy][config_name][:provider]
       src = File.expand_path(@site.config[:output_dir]) + '/'
-      bucket = @site.config[:deploy][config_name][:bucket]
+      bucket = @site.config[:deploy][config_name][:bucket] || ENV['S3_BUCKET']
 
       path = @site.config[:deploy][config_name][:path]
 
@@ -90,8 +90,8 @@ module NanocDeploy::Extra::Deployers
         when 'aws'
           connection = Fog::Storage.new(
             :provider => 'AWS',
-            :aws_access_key_id => @site.config[:deploy][config_name][:aws_access_key_id],
-            :aws_secret_access_key => @site.config[:deploy][config_name][:aws_secret_access_key]
+            :aws_access_key_id => @site.config[:deploy][config_name][:aws_access_key_id] || ENV['AWS_ACCESS_KEY_ID'],
+            :aws_secret_access_key => @site.config[:deploy][config_name][:aws_secret_access_key] || ENV['AWS_SECRET_ACCESS_KEY']
             )
         when 'rackspace'
           connection = Fog::Storage.new(
